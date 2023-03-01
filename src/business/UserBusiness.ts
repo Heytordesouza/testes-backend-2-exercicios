@@ -1,5 +1,5 @@
 import { UserDatabase } from "../database/UserDatabase"
-import { GetAllOutputDTO, LoginInputDTO, LoginOutputDTO, SignupInputDTO, SignupOutputDTO } from "../dtos/userDTO";
+import { DeleteUserInputDTO, GetAllOutputDTO, GetUserByIdInputDTO, LoginInputDTO, LoginOutputDTO, SignupInputDTO, SignupOutputDTO } from "../dtos/userDTO";
 import { BadRequestError } from "../errors/BadRequestError";
 import { NotFoundError } from "../errors/NotFoundError";
 import { User } from "../models/User";
@@ -137,5 +137,50 @@ export class UserBusiness {
         })
 
         return output
+    }
+
+    public deleteUser = async (input: DeleteUserInputDTO): Promise<void> => {
+        const { idToDelete, token } = input
+
+        const userToDeleteDB = await this.userDatabase.findUserById(idToDelete)
+
+        if (!userToDeleteDB) {
+            throw new NotFoundError("'id' para deletar não existe")
+        }
+
+        const payload = this.tokenManager.getPayload(token)
+
+        if(payload === null){
+            throw new BadRequestError("'token' não é valido")
+        }
+
+        await this.userDatabase.deleteUserById(userToDeleteDB.id)
+    }
+
+    public getUserById = async (input: any) => {
+        const { id, token } = input
+
+        const userDB = await this.userDatabase.findUserById(id)
+
+        if (!userDB) {
+            throw new NotFoundError("'id' não existe")
+        }
+
+        const payload = this.tokenManager.getPayload(token)
+
+        if(payload === null){
+            throw new BadRequestError("'token' não é valido")
+        }
+
+        const user = new User(
+            userDB.id,
+            userDB.name,
+            userDB.email,
+            userDB.password,
+            userDB.role,
+            userDB.created_at
+        )
+
+        return user.toBusinessModel() 
     }
 }

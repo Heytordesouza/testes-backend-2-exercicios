@@ -12,7 +12,7 @@ export class UserDatabaseMock extends BaseDatabase {
         switch (email) {
             case "normal@email.com":
                 return {
-                    id: "id-mock",
+                    id: "id-mock1",
                     name: "Normal Mock",
                     email: "normal@email.com",
                     password: "hash-bananinha",
@@ -21,7 +21,7 @@ export class UserDatabaseMock extends BaseDatabase {
                 }
             case "admin@email.com":
                 return {
-                    id: "id-mock",
+                    id: "id-mock2",
                     name: "Admin Mock",
                     email: "admin@email.com",
                     password: "hash-bananinha",
@@ -52,5 +52,34 @@ export class UserDatabaseMock extends BaseDatabase {
                 role: USER_ROLES.ADMIN
             }
         ]
+    }
+
+    public findUserById = async (id: string): Promise<UserDB | undefined>  => {
+        switch (id) {
+            case "id-mock-normal":
+                return {
+                    id: "id-mock-normal",
+                    name: "Normal Mock",
+                    email: "normal@email.com",
+                    password: "hash-bananinha",
+                    created_at: new Date().toISOString(),
+                    role: USER_ROLES.NORMAL
+                }
+            case "id-mock-admin":
+                return {
+                    id: "id-mock-admin",
+                    name: "Admin Mock",
+                    email: "admin@email.com",
+                    password: "hash-bananinha",
+                    created_at: new Date().toISOString(),
+                    role: USER_ROLES.ADMIN
+                }
+            default:
+                return undefined
+        }
+    }
+
+    public deleteUserById = async (idToDelete: string): Promise<void> => {
+       // não precisa retornar, pois é void
     }
 }
