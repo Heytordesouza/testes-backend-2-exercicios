@@ -63,4 +63,46 @@ export class UserController {
             }
         }
     }
+
+    public deleteUser = async (req: Request, res: Response) => {
+        try {
+            const input = {
+                idToDelete: req.params.id,
+                token: req.headers.authorization as string
+            }
+
+            await this.userBusiness.deleteUser(input)
+
+            res.status(200).end()
+        } catch (error) {
+            console.log(error)
+
+            if (error instanceof BaseError) {
+                res.status(error.statusCode).send(error.message)
+            } else {
+                res.status(500).send("Erro inesperado")
+            }
+        } 
+    }
+
+    public getUserById = async (req: Request, res: Response) => {
+        try {
+            const input = {
+                id: req.params.id,
+                token: req.headers.authorization as string
+            }
+
+            const output = await this.userBusiness.getUserById(input)
+
+            res.status(200).send(output)
+        } catch (error) {
+            console.log(error)
+
+            if (error instanceof BaseError) {
+                res.status(error.statusCode).send(error.message)
+            } else {
+                res.status(500).send("Erro inesperado")
+            }
+        } 
+    }
 }
